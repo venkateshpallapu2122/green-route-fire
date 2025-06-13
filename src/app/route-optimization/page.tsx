@@ -1,7 +1,7 @@
 
 'use client';
 
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -13,6 +13,13 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Loader2, MapIcon, CheckCircle2, Sparkles, Thermometer, Wind, AlertTriangle, Info } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ENVIRONMENTAL_CONSIDERATIONS_OPTIONS, VEHICLE_TYPES, ECO_FRIENDLY_OPTIONS } from '@/lib/constants';
+
+// Extend window type for Google Maps
+declare global {
+  interface Window {
+    google?: typeof google;
+  }
+}
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -34,6 +41,63 @@ export default function RouteOptimizationPage() {
   const initialState: RouteOptimizationFormState = { message: null, errors: null, simulationResult: null, origin: null, destination: null };
   const [state, formAction] = React.useActionState(optimizeRouteAction, initialState);
 
+  const originInputRef = useRef<HTMLInputElement>(null);
+  const destinationInputRef = useRef<HTMLInputElement>(null);
+  const [isMapsScriptLoaded, setIsMapsScriptLoaded] = useState(false);
+  const apiKey = "AIzaSyA_O_V6h-YBbKbYbIw4_T2y1EASjLBJM2o"; // Your Google Maps API Key
+
+  useEffect(() => {
+    const scriptId = "google-maps-script";
+
+    if (window.google?.maps?.places) {
+      setIsMapsScriptLoaded(true);
+      return;
+    }
+    
+    if (document.getElementById(scriptId)) {
+      // Script already added or is loading
+      if (window.google?.maps?.places) setIsMapsScriptLoaded(true); // Check if loaded by another instance
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.id = scriptId;
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
+    script.async = true;
+    script.defer = true;
+    script.onload = () => {
+      setIsMapsScriptLoaded(true);
+    };
+    script.onerror = () => {
+      console.error("Google Maps script could not be loaded.");
+    };
+    document.head.appendChild(script);
+
+  }, [apiKey]);
+
+  useEffect(() => {
+    if (!isMapsScriptLoaded || !window.google?.maps?.places) {
+      return;
+    }
+
+    if (originInputRef.current) {
+      const originAutocomplete = new window.google.maps.places.Autocomplete(
+        originInputRef.current,
+        { types: ['geocode', 'establishment'] }
+      );
+      originAutocomplete.setFields(['formatted_address', 'name', 'geometry']);
+    }
+
+    if (destinationInputRef.current) {
+      const destinationAutocomplete = new window.google.maps.places.Autocomplete(
+        destinationInputRef.current,
+        { types: ['geocode', 'establishment'] }
+      );
+      destinationAutocomplete.setFields(['formatted_address', 'name', 'geometry']);
+    }
+  }, [isMapsScriptLoaded]);
+
+
   return (
     <div className="container mx-auto py-8 grid gap-8 md:grid-cols-3">
       <Card className="md:col-span-1 shadow-lg">
@@ -45,12 +109,26 @@ export default function RouteOptimizationPage() {
           <CardContent className="space-y-4">
             <div>
               <Label htmlFor="origin">Origin Address</Label>
-              <Input id="origin" name="origin" placeholder="e.g., 123 Main St, Anytown" aria-describedby="origin-error" suppressHydrationWarning={true} />
+              <Input 
+                id="origin" 
+                name="origin" 
+                placeholder="e.g., 123 Main St, Anytown" 
+                aria-describedby="origin-error" 
+                suppressHydrationWarning={true}
+                ref={originInputRef} 
+              />
               {state.errors?.origin && <p id="origin-error" className="text-sm text-destructive mt-1">{state.errors.origin.join(', ')}</p>}
             </div>
             <div>
               <Label htmlFor="destination">Destination Address</Label>
-              <Input id="destination" name="destination" placeholder="e.g., 456 Oak Ave, Otherville" aria-describedby="destination-error" suppressHydrationWarning={true} />
+              <Input 
+                id="destination" 
+                name="destination" 
+                placeholder="e.g., 456 Oak Ave, Otherville" 
+                aria-describedby="destination-error" 
+                suppressHydrationWarning={true}
+                ref={destinationInputRef}
+              />
               {state.errors?.destination && <p id="destination-error" className="text-sm text-destructive mt-1">{state.errors.destination.join(', ')}</p>}
             </div>
             <div>
@@ -242,7 +320,7 @@ export default function RouteOptimizationPage() {
                       loading="lazy"
                       allowFullScreen
                       referrerPolicy="no-referrer-when-downgrade"
-                      src={`https://www.google.com/maps/embed/v1/directions?key=AIzaSyA_O_V6h-YBbKbYbIw4_T2y1EASjLBJM2o&origin=${encodeURIComponent(state.origin)}&destination=${encodeURIComponent(state.destination)}`}
+                      src={`https://www.google.com/maps/embed/v1/directions?key=${apiKey}&origin=${encodeURIComponent(state.origin)}&destination=${encodeURIComponent(state.destination)}`}
                       title="Route Map"
                     ></iframe>
                   </div>
@@ -266,3 +344,4 @@ export default function RouteOptimizationPage() {
     </div>
   );
 }
+
