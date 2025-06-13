@@ -1,8 +1,8 @@
 
 'use client';
 
-import React from 'react';
-import { useActionState, useFormStatus } from 'react-dom';
+import React from 'react'; // Changed: Removed named import for useActionState
+import { useFormStatus } from 'react-dom';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -31,7 +31,7 @@ function SubmitButton() {
 
 export default function RouteOptimizationPage() {
   const initialState: RouteOptimizationFormState = { message: null, errors: null, simulationResult: null, origin: null, destination: null };
-  const [state, formAction] = useActionState(optimizeRouteAction, initialState);
+  const [state, formAction] = React.useActionState(optimizeRouteAction, initialState); // Changed: Using React.useActionState
 
   return (
     <div className="container mx-auto py-8 grid gap-8 md:grid-cols-3">
