@@ -16,7 +16,7 @@ import { ENVIRONMENTAL_CONSIDERATIONS_OPTIONS, TRAFFIC_CONDITIONS_OPTIONS, VEHIC
 function SubmitButton() {
   const { pending } = useFormStatus();
   return (
-    <Button type="submit" className="w-full" disabled={pending} aria-live="polite">
+    <Button type="submit" className="w-full" disabled={pending} aria-live="polite" suppressHydrationWarning={true}>
       {pending ? (
         <>
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -44,18 +44,18 @@ export default function RouteOptimizationPage() {
           <CardContent className="space-y-4">
             <div>
               <Label htmlFor="origin">Origin Address</Label>
-              <Input id="origin" name="origin" placeholder="e.g., 123 Main St, Anytown" aria-describedby="origin-error" />
+              <Input id="origin" name="origin" placeholder="e.g., 123 Main St, Anytown" aria-describedby="origin-error" suppressHydrationWarning={true} />
               {state.errors?.origin && <p id="origin-error" className="text-sm text-destructive mt-1">{state.errors.origin.join(', ')}</p>}
             </div>
             <div>
               <Label htmlFor="destination">Destination Address</Label>
-              <Input id="destination" name="destination" placeholder="e.g., 456 Oak Ave, Otherville" aria-describedby="destination-error" />
+              <Input id="destination" name="destination" placeholder="e.g., 456 Oak Ave, Otherville" aria-describedby="destination-error" suppressHydrationWarning={true} />
               {state.errors?.destination && <p id="destination-error" className="text-sm text-destructive mt-1">{state.errors.destination.join(', ')}</p>}
             </div>
             <div>
               <Label htmlFor="vehicleType">Vehicle Type</Label>
               <Select name="vehicleType" defaultValue={VEHICLE_TYPES[0]}>
-                <SelectTrigger id="vehicleType" aria-describedby="vehicleType-error">
+                <SelectTrigger id="vehicleType" aria-describedby="vehicleType-error" suppressHydrationWarning={true}>
                   <SelectValue placeholder="Select vehicle type" />
                 </SelectTrigger>
                 <SelectContent>
@@ -68,13 +68,13 @@ export default function RouteOptimizationPage() {
             </div>
             <div>
               <Label htmlFor="vehicleCapacity">Vehicle Capacity (kg)</Label>
-              <Input id="vehicleCapacity" name="vehicleCapacity" type="number" placeholder="e.g., 1000" aria-describedby="vehicleCapacity-error" />
+              <Input id="vehicleCapacity" name="vehicleCapacity" type="number" placeholder="e.g., 1000" aria-describedby="vehicleCapacity-error" suppressHydrationWarning={true} />
               {state.errors?.vehicleCapacity && <p id="vehicleCapacity-error" className="text-sm text-destructive mt-1">{state.errors.vehicleCapacity.join(', ')}</p>}
             </div>
              <div>
               <Label htmlFor="trafficConditions">Traffic Conditions</Label>
               <Select name="trafficConditions" defaultValue={TRAFFIC_CONDITIONS_OPTIONS[0]}>
-                <SelectTrigger id="trafficConditions" aria-describedby="trafficConditions-error">
+                <SelectTrigger id="trafficConditions" aria-describedby="trafficConditions-error" suppressHydrationWarning={true}>
                   <SelectValue placeholder="Select traffic conditions" />
                 </SelectTrigger>
                 <SelectContent>
@@ -86,7 +86,7 @@ export default function RouteOptimizationPage() {
             <div>
               <Label htmlFor="environmentalConsiderations">Environmental Considerations</Label>
                <Select name="environmentalConsiderations" defaultValue={ENVIRONMENTAL_CONSIDERATIONS_OPTIONS[0]}>
-                <SelectTrigger id="environmentalConsiderations" aria-describedby="environmentalConsiderations-error">
+                <SelectTrigger id="environmentalConsiderations" aria-describedby="environmentalConsiderations-error" suppressHydrationWarning={true}>
                   <SelectValue placeholder="Select environmental considerations" />
                 </SelectTrigger>
                 <SelectContent>
