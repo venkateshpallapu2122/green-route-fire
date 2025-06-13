@@ -1,3 +1,4 @@
+
 'use client';
 
 import React from 'react';
@@ -154,10 +155,9 @@ export default function RouteOptimizationPage() {
                       loading="lazy"
                       allowFullScreen
                       referrerPolicy="no-referrer-when-downgrade"
-                      src={`https://www.google.com/maps/embed/v1/directions?key=YOUR_GOOGLE_MAPS_API_KEY_HERE&origin=${encodeURIComponent(state.origin)}&destination=${encodeURIComponent(state.destination)}`}
+                      src={`https://www.google.com/maps/embed/v1/directions?key=AIzaSyA_O_V6h-YBbKbYbIw4_T2y1EASjLBJM2o&origin=${encodeURIComponent(state.origin)}&destination=${encodeURIComponent(state.destination)}`}
                       title="Route Map"
                     ></iframe>
-                    <p className="text-xs text-center text-muted-foreground p-1">Replace YOUR_GOOGLE_MAPS_API_KEY_HERE with your actual Google Maps API key.</p>
                   </div>
                 ) : (
                   <div className="mt-4 h-64 bg-muted rounded-lg flex items-center justify-center text-muted-foreground shadow-inner" data-ai-hint="route map">
