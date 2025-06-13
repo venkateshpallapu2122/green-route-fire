@@ -1,7 +1,7 @@
 
 'use client';
 
-import React from 'react'; // Changed: Removed named import for useActionState
+import React from 'react';
 import { useFormStatus } from 'react-dom';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -9,9 +9,9 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { optimizeRouteAction, type RouteOptimizationFormState } from './actions';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Loader2, MapIcon, CheckCircle2 } from 'lucide-react';
+import { Loader2, MapIcon, CheckCircle2, Sparkles } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ENVIRONMENTAL_CONSIDERATIONS_OPTIONS, TRAFFIC_CONDITIONS_OPTIONS, VEHICLE_TYPES } from '@/lib/constants';
+import { ENVIRONMENTAL_CONSIDERATIONS_OPTIONS, TRAFFIC_CONDITIONS_OPTIONS, VEHICLE_TYPES, ECO_FRIENDLY_OPTIONS } from '@/lib/constants';
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -31,7 +31,7 @@ function SubmitButton() {
 
 export default function RouteOptimizationPage() {
   const initialState: RouteOptimizationFormState = { message: null, errors: null, simulationResult: null, origin: null, destination: null };
-  const [state, formAction] = React.useActionState(optimizeRouteAction, initialState); // Changed: Using React.useActionState
+  const [state, formAction] = React.useActionState(optimizeRouteAction, initialState);
 
   return (
     <div className="container mx-auto py-8 grid gap-8 md:grid-cols-3">
@@ -95,6 +95,18 @@ export default function RouteOptimizationPage() {
               </Select>
               {state.errors?.environmentalConsiderations && <p id="environmentalConsiderations-error" className="text-sm text-destructive mt-1">{state.errors.environmentalConsiderations.join(', ')}</p>}
             </div>
+            <div>
+              <Label htmlFor="preferredEcoOption">Preferred Eco Option</Label>
+               <Select name="preferredEcoOption" defaultValue={ECO_FRIENDLY_OPTIONS[0].value}>
+                <SelectTrigger id="preferredEcoOption" aria-describedby="preferredEcoOption-error" suppressHydrationWarning={true}>
+                  <SelectValue placeholder="Select eco-friendly preference" />
+                </SelectTrigger>
+                <SelectContent>
+                  {ECO_FRIENDLY_OPTIONS.map(eco => <SelectItem key={eco.value} value={eco.value}>{eco.label}</SelectItem>)}
+                </SelectContent>
+              </Select>
+              {state.errors?.preferredEcoOption && <p id="preferredEcoOption-error" className="text-sm text-destructive mt-1">{state.errors.preferredEcoOption.join(', ')}</p>}
+            </div>
           </CardContent>
           <CardFooter>
             <SubmitButton />
@@ -128,13 +140,22 @@ export default function RouteOptimizationPage() {
                   <h3 className="font-semibold text-primary">Optimized Route:</h3>
                   <p className="text-muted-foreground whitespace-pre-wrap">{state.simulationResult.optimizedRoute}</p>
                 </div>
+                {state.simulationResult.ecoFriendlySuggestion && (
+                  <Alert variant="default" className="bg-accent/10 border-accent/50">
+                    <Sparkles className="h-5 w-5 text-accent" />
+                    <AlertTitle className="text-accent">Eco-Friendly Suggestion</AlertTitle>
+                    <AlertDescription className="text-accent-foreground">
+                      {state.simulationResult.ecoFriendlySuggestion}
+                    </AlertDescription>
+                  </Alert>
+                )}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Card className="bg-secondary/30">
                     <CardHeader className="pb-2">
                       <CardTitle className="text-sm font-medium">Est. Fuel Consumption</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <p className="text-2xl font-bold text-primary">{state.simulationResult.estimatedFuelConsumption.toFixed(2)} L</p>
+                      <p className="text-2xl font-bold text-primary">{state.simulationResult.estimatedFuelConsumption.toFixed(2)} L/kWh</p>
                     </CardContent>
                   </Card>
                   <Card className="bg-secondary/30">
@@ -179,3 +200,4 @@ export default function RouteOptimizationPage() {
     </div>
   );
 }
+

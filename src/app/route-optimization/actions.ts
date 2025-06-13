@@ -1,3 +1,4 @@
+
 'use server';
 
 import { z } from 'zod';
@@ -11,6 +12,7 @@ const RouteOptimizationFormSchema = z.object({
   vehicleType: z.string().min(1, { message: 'Vehicle type is required.'}),
   trafficConditions: z.string().min(1, { message: 'Traffic conditions are required.'}),
   environmentalConsiderations: z.string().min(1, { message: 'Environmental considerations are required.'}),
+  preferredEcoOption: z.enum(['standard', 'ev_optimized', 'bike_optimized', 'not_specified']).default('not_specified'),
 });
 
 export type RouteOptimizationFormState = {
@@ -22,6 +24,7 @@ export type RouteOptimizationFormState = {
     vehicleType?: string[];
     trafficConditions?: string[];
     environmentalConsiderations?: string[];
+    preferredEcoOption?: string[];
   } | null;
   simulationResult?: RouteSimulationResult | null;
   origin?: string | null;
@@ -39,6 +42,7 @@ export async function optimizeRouteAction(
     vehicleType: formData.get('vehicleType'),
     trafficConditions: formData.get('trafficConditions'),
     environmentalConsiderations: formData.get('environmentalConsiderations'),
+    preferredEcoOption: formData.get('preferredEcoOption'),
   });
 
   if (!validatedFields.success) {
@@ -68,8 +72,9 @@ export async function optimizeRouteAction(
       message: 'An error occurred during route optimization. Please try again.',
       errors: null,
       simulationResult: null,
-      origin: inputData.origin, // Still pass origin/destination on error if available for context
+      origin: inputData.origin, 
       destination: inputData.destination,
     };
   }
 }
+
