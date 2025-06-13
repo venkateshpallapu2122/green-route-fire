@@ -29,9 +29,14 @@ export interface NavItem {
 }
 
 export interface RouteSimulationResult {
-  optimizedRoute: string;
+  optimizedRouteDescription: string;
+  estimatedDuration: string;
+  estimatedDistance: string;
   estimatedFuelConsumption: number; // Liters for combustion, kWh for electric
   estimatedCO2Emissions: number;
   ecoFriendlySuggestion?: string;
+  weatherForecastImpact?: string;
+  trafficConsiderations?: string;
+  routeWarnings?: string[];
+  otherRecommendations?: string[];
 }
-

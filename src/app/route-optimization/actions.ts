@@ -10,9 +10,10 @@ const RouteOptimizationFormSchema = z.object({
   destination: z.string().min(3, { message: 'Destination must be at least 3 characters.' }),
   vehicleCapacity: z.coerce.number().positive({ message: 'Vehicle capacity must be a positive number.' }),
   vehicleType: z.string().min(1, { message: 'Vehicle type is required.'}),
-  trafficConditions: z.string().min(1, { message: 'Traffic conditions are required.'}),
   environmentalConsiderations: z.string().min(1, { message: 'Environmental considerations are required.'}),
   preferredEcoOption: z.enum(['standard', 'ev_optimized', 'bike_optimized', 'not_specified']).default('not_specified'),
+  departureDateTime: z.string().optional(), // Validate as string, actual datetime validation can be more complex or handled by browser input type
+  userPreferences: z.string().optional(),
 });
 
 export type RouteOptimizationFormState = {
@@ -22,9 +23,10 @@ export type RouteOptimizationFormState = {
     destination?: string[];
     vehicleCapacity?: string[];
     vehicleType?: string[];
-    trafficConditions?: string[];
     environmentalConsiderations?: string[];
     preferredEcoOption?: string[];
+    departureDateTime?: string[];
+    userPreferences?: string[];
   } | null;
   simulationResult?: RouteSimulationResult | null;
   origin?: string | null;
@@ -40,9 +42,10 @@ export async function optimizeRouteAction(
     destination: formData.get('destination'),
     vehicleCapacity: formData.get('vehicleCapacity'),
     vehicleType: formData.get('vehicleType'),
-    trafficConditions: formData.get('trafficConditions'),
     environmentalConsiderations: formData.get('environmentalConsiderations'),
     preferredEcoOption: formData.get('preferredEcoOption'),
+    departureDateTime: formData.get('departureDateTime') || undefined, // Ensure undefined if empty
+    userPreferences: formData.get('userPreferences') || undefined, // Ensure undefined if empty
   });
 
   if (!validatedFields.success) {
@@ -50,12 +53,23 @@ export async function optimizeRouteAction(
       message: 'Validation failed. Please check your inputs.',
       errors: validatedFields.error.flatten().fieldErrors,
       simulationResult: null,
-      origin: null,
-      destination: null,
+      origin: formData.get('origin') as string, // keep form values for re-population
+      destination: formData.get('destination') as string,
     };
   }
 
-  const inputData: GenerateRouteSimulationInput = validatedFields.data;
+  const inputData: GenerateRouteSimulationInput = {
+    origin: validatedFields.data.origin,
+    destination: validatedFields.data.destination,
+    vehicleCapacity: validatedFields.data.vehicleCapacity,
+    vehicleType: validatedFields.data.vehicleType,
+    environmentalConsiderations: validatedFields.data.environmentalConsiderations,
+    preferredEcoOption: validatedFields.data.preferredEcoOption,
+    // Only pass if value exists, otherwise let AI default to 'now' effectively
+    ...(validatedFields.data.departureDateTime && { departureDateTime: validatedFields.data.departureDateTime }),
+    ...(validatedFields.data.userPreferences && { userPreferences: validatedFields.data.userPreferences }),
+  };
+
 
   try {
     const result = await generateRouteSimulation(inputData);
@@ -77,4 +91,3 @@ export async function optimizeRouteAction(
     };
   }
 }
-

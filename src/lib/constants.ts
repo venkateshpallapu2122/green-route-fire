@@ -1,5 +1,5 @@
 
-import { LayoutDashboard, MapPinned, Truck, BarChart3, Settings as SettingsIcon, Leaf, Fuel, CloudCog, Bike, Zap } from 'lucide-react';
+import { LayoutDashboard, MapPinned, Truck, BarChart3, Settings as SettingsIcon, Leaf, Fuel, Zap, Bike } from 'lucide-react';
 import type { NavItem, Vehicle, ReportEntry } from '@/types';
 
 export const NAV_ITEMS: NavItem[] = [
@@ -39,8 +39,7 @@ export const VEHICLE_TYPES: Vehicle['type'][] = ['Van', 'Truck (Light)', 'Truck 
 export const VEHICLE_HEALTH_STATUSES: Vehicle['healthStatus'][] = ['Good', 'Maintenance Soon', 'Needs Repair'];
 export const FUEL_TYPES: Vehicle['fuelType'][] = ['Diesel', 'Gasoline', 'Electric', 'Hybrid'];
 
-export const TRAFFIC_CONDITIONS_OPTIONS = ['Light', 'Moderate', 'Heavy', 'Unknown'];
-export const ENVIRONMENTAL_CONSIDERATIONS_OPTIONS = ['None', 'Low Emission Zones', 'Avoid Tolls', 'Prefer Green Routes'];
+export const ENVIRONMENTAL_CONSIDERATIONS_OPTIONS = ['None', 'Low Emission Zones', 'Avoid Tolls if Possible', 'Prefer Green Routes', 'Minimize Highway Use'];
 
 export const ECO_FRIENDLY_OPTIONS: { value: 'not_specified' | 'standard' | 'ev_optimized' | 'bike_optimized'; label: string; icon?: React.ElementType }[] = [
   { value: 'not_specified', label: 'Not Specified' },
