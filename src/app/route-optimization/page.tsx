@@ -1,8 +1,7 @@
-
 'use client';
 
-import React, { useActionState } from 'react';
-import { useFormStatus } from 'react-dom';
+import React from 'react';
+import { useActionState, useFormStatus } from 'react-dom';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -30,7 +29,7 @@ function SubmitButton() {
 }
 
 export default function RouteOptimizationPage() {
-  const initialState: RouteOptimizationFormState = { message: null, errors: null, simulationResult: null };
+  const initialState: RouteOptimizationFormState = { message: null, errors: null, simulationResult: null, origin: null, destination: null };
   const [state, formAction] = useActionState(optimizeRouteAction, initialState);
 
   return (
@@ -146,15 +145,31 @@ export default function RouteOptimizationPage() {
                     </CardContent>
                   </Card>
                 </div>
-                 <div className="mt-4 h-64 bg-muted rounded-lg flex items-center justify-center text-muted-foreground shadow-inner" data-ai-hint="route map">
-                  <MapIcon className="w-16 h-16 mr-2" />
-                  Interactive Map Placeholder
-                </div>
+                {state.origin && state.destination ? (
+                  <div className="mt-4 h-80 bg-muted rounded-lg shadow-inner overflow-hidden" data-ai-hint="interactive route map">
+                    <iframe
+                      width="100%"
+                      height="100%"
+                      style={{ border: 0 }}
+                      loading="lazy"
+                      allowFullScreen
+                      referrerPolicy="no-referrer-when-downgrade"
+                      src={`https://www.google.com/maps/embed/v1/directions?key=YOUR_GOOGLE_MAPS_API_KEY_HERE&origin=${encodeURIComponent(state.origin)}&destination=${encodeURIComponent(state.destination)}`}
+                      title="Route Map"
+                    ></iframe>
+                    <p className="text-xs text-center text-muted-foreground p-1">Replace YOUR_GOOGLE_MAPS_API_KEY_HERE with your actual Google Maps API key.</p>
+                  </div>
+                ) : (
+                  <div className="mt-4 h-64 bg-muted rounded-lg flex items-center justify-center text-muted-foreground shadow-inner" data-ai-hint="route map">
+                    <MapIcon className="w-16 h-16 mr-2" />
+                    Map data unavailable (origin/destination missing).
+                  </div>
+                )}
               </div>
             ) : (
               <div className="h-64 flex flex-col items-center justify-center text-center text-muted-foreground p-4">
                 <MapIcon className="w-16 h-16 mb-4 text-gray-400" />
-                <p className="text-lg font-medium">Your optimized route will appear here.</p>
+                <p className="text-lg font-medium">Your optimized route and map will appear here.</p>
                 <p className="text-sm">Fill out the form and click "Optimize Route" to see the simulation.</p>
               </div>
             )}

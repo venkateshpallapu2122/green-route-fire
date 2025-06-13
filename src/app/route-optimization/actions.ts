@@ -24,6 +24,8 @@ export type RouteOptimizationFormState = {
     environmentalConsiderations?: string[];
   } | null;
   simulationResult?: RouteSimulationResult | null;
+  origin?: string | null;
+  destination?: string | null;
 };
 
 export async function optimizeRouteAction(
@@ -44,6 +46,8 @@ export async function optimizeRouteAction(
       message: 'Validation failed. Please check your inputs.',
       errors: validatedFields.error.flatten().fieldErrors,
       simulationResult: null,
+      origin: null,
+      destination: null,
     };
   }
 
@@ -55,6 +59,8 @@ export async function optimizeRouteAction(
       message: 'Route optimization successful!',
       errors: null,
       simulationResult: result,
+      origin: inputData.origin,
+      destination: inputData.destination,
     };
   } catch (error) {
     console.error('Route optimization error:', error);
@@ -62,6 +68,8 @@ export async function optimizeRouteAction(
       message: 'An error occurred during route optimization. Please try again.',
       errors: null,
       simulationResult: null,
+      origin: inputData.origin, // Still pass origin/destination on error if available for context
+      destination: inputData.destination,
     };
   }
 }
