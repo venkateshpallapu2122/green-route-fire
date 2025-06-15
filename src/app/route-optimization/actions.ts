@@ -12,7 +12,7 @@ const RouteOptimizationFormSchema = z.object({
   vehicleType: z.string().min(1, { message: 'Vehicle type is required.'}),
   environmentalConsiderations: z.string().min(1, { message: 'Environmental considerations are required.'}),
   preferredEcoOption: z.enum(['standard', 'ev_optimized', 'bike_optimized', 'not_specified']).default('not_specified'),
-  departureDateTime: z.string().optional(), // Validate as string, actual datetime validation can be more complex or handled by browser input type
+  departureDateTime: z.string().optional(),
   userPreferences: z.string().optional(),
 });
 
@@ -44,8 +44,8 @@ export async function optimizeRouteAction(
     vehicleType: formData.get('vehicleType'),
     environmentalConsiderations: formData.get('environmentalConsiderations'),
     preferredEcoOption: formData.get('preferredEcoOption'),
-    departureDateTime: formData.get('departureDateTime') || undefined, // Ensure undefined if empty
-    userPreferences: formData.get('userPreferences') || undefined, // Ensure undefined if empty
+    departureDateTime: formData.get('departureDateTime') || undefined,
+    userPreferences: formData.get('userPreferences') || undefined,
   });
 
   if (!validatedFields.success) {
@@ -53,7 +53,7 @@ export async function optimizeRouteAction(
       message: 'Validation failed. Please check your inputs.',
       errors: validatedFields.error.flatten().fieldErrors,
       simulationResult: null,
-      origin: formData.get('origin') as string, // keep form values for re-population
+      origin: formData.get('origin') as string,
       destination: formData.get('destination') as string,
     };
   }
@@ -65,7 +65,6 @@ export async function optimizeRouteAction(
     vehicleType: validatedFields.data.vehicleType,
     environmentalConsiderations: validatedFields.data.environmentalConsiderations,
     preferredEcoOption: validatedFields.data.preferredEcoOption,
-    // Only pass if value exists, otherwise let AI default to 'now' effectively
     ...(validatedFields.data.departureDateTime && { departureDateTime: validatedFields.data.departureDateTime }),
     ...(validatedFields.data.userPreferences && { userPreferences: validatedFields.data.userPreferences }),
   };
@@ -81,12 +80,12 @@ export async function optimizeRouteAction(
       destination: inputData.destination,
     };
   } catch (error) {
-    console.error('Route optimization error:', error);
+    console.error('Route optimization error. This might be due to missing environment variables (e.g., GEMINI_API_KEY or GOOGLE_API_KEY) in your Vercel/hosting provider settings, or API configuration issues for the Genkit AI service. Full error:', error);
     return {
       message: 'An error occurred during route optimization. Please try again.',
       errors: null,
       simulationResult: null,
-      origin: inputData.origin, 
+      origin: inputData.origin,
       destination: inputData.destination,
     };
   }
