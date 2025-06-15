@@ -13,6 +13,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Loader2, MapIcon, CheckCircle2, Sparkles, Thermometer, Wind, AlertTriangle, Info } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ENVIRONMENTAL_CONSIDERATIONS_OPTIONS, VEHICLE_TYPES, ECO_FRIENDLY_OPTIONS } from '@/lib/constants';
+import { GOOGLE_MAPS_API_KEY } from '@/lib/config';
 
 // Extend window type for Google Maps
 declare global {
@@ -44,8 +45,7 @@ export default function RouteOptimizationPage() {
   const originInputRef = useRef<HTMLInputElement>(null);
   const destinationInputRef = useRef<HTMLInputElement>(null);
   const [isMapsScriptLoaded, setIsMapsScriptLoaded] = useState(false);
-  const apiKey = "AIzaSyA_O_V6h-YBbKbYbIw4_T2y1EASjLBJM2o"; // Your Google Maps API Key
-
+  
   useEffect(() => {
     const scriptId = "google-maps-script";
 
@@ -62,7 +62,7 @@ export default function RouteOptimizationPage() {
 
     const script = document.createElement('script');
     script.id = scriptId;
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places`;
     script.async = true;
     script.defer = true;
     script.onload = () => {
@@ -73,7 +73,7 @@ export default function RouteOptimizationPage() {
     };
     document.head.appendChild(script);
 
-  }, [apiKey]);
+  }, []);
 
   useEffect(() => {
     if (!isMapsScriptLoaded || !window.google?.maps?.places) {
@@ -320,7 +320,7 @@ export default function RouteOptimizationPage() {
                       loading="lazy"
                       allowFullScreen
                       referrerPolicy="no-referrer-when-downgrade"
-                      src={`https://www.google.com/maps/embed/v1/directions?key=${apiKey}&origin=${encodeURIComponent(state.origin)}&destination=${encodeURIComponent(state.destination)}`}
+                      src={`https://www.google.com/maps/embed/v1/directions?key=${GOOGLE_MAPS_API_KEY}&origin=${encodeURIComponent(state.origin)}&destination=${encodeURIComponent(state.destination)}`}
                       title="Route Map"
                     ></iframe>
                   </div>
