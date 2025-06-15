@@ -49,6 +49,7 @@ export async function optimizeRouteAction(
   });
 
   if (!validatedFields.success) {
+    console.error("Validation errors:", validatedFields.error.flatten().fieldErrors);
     return {
       message: 'Validation failed. Please check your inputs.',
       errors: validatedFields.error.flatten().fieldErrors,
@@ -80,7 +81,10 @@ export async function optimizeRouteAction(
       destination: inputData.destination,
     };
   } catch (error) {
-    console.error('Route optimization error. This might be due to missing environment variables (e.g., GEMINI_API_KEY or GOOGLE_API_KEY) in your Vercel/hosting provider settings, or API configuration issues for the Genkit AI service. Full error:', error);
+    console.error(
+      'Route optimization error. This might be due to missing environment variables (e.g., GEMINI_API_KEY or GOOGLE_API_KEY) in your Vercel/hosting provider settings, or API configuration issues for the Genkit AI service. Full error:',
+      error
+    );
     return {
       message: 'An error occurred during route optimization. Please try again.',
       errors: null,

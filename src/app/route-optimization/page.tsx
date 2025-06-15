@@ -60,23 +60,27 @@ export default function RouteOptimizationPage() {
       return;
     }
 
-    const script = document.createElement('script');
-    script.id = scriptId;
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places`;
-    script.async = true;
-    script.defer = true;
-    script.onload = () => {
-      setIsMapsScriptLoaded(true);
-    };
-    script.onerror = () => {
-      console.error("Google Maps script could not be loaded.");
-    };
-    document.head.appendChild(script);
+    if (GOOGLE_MAPS_API_KEY) {
+      const script = document.createElement('script');
+      script.id = scriptId;
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places`;
+      script.async = true;
+      script.defer = true;
+      script.onload = () => {
+        setIsMapsScriptLoaded(true);
+      };
+      script.onerror = () => {
+        console.error("Google Maps script could not be loaded.");
+      };
+      document.head.appendChild(script);
+    } else {
+      console.warn("Google Maps API key is not available. Autocomplete and map features will be disabled.");
+    }
 
   }, []);
 
   useEffect(() => {
-    if (!isMapsScriptLoaded || !window.google?.maps?.places) {
+    if (!isMapsScriptLoaded || !window.google?.maps?.places || !GOOGLE_MAPS_API_KEY) {
       return;
     }
 
@@ -115,7 +119,8 @@ export default function RouteOptimizationPage() {
                 placeholder="e.g., 123 Main St, Anytown" 
                 aria-describedby="origin-error" 
                 suppressHydrationWarning={true}
-                ref={originInputRef} 
+                ref={originInputRef}
+                required 
               />
               {state.errors?.origin && <p id="origin-error" className="text-sm text-destructive mt-1">{state.errors.origin.join(', ')}</p>}
             </div>
@@ -128,6 +133,7 @@ export default function RouteOptimizationPage() {
                 aria-describedby="destination-error" 
                 suppressHydrationWarning={true}
                 ref={destinationInputRef}
+                required
               />
               {state.errors?.destination && <p id="destination-error" className="text-sm text-destructive mt-1">{state.errors.destination.join(', ')}</p>}
             </div>
@@ -152,7 +158,7 @@ export default function RouteOptimizationPage() {
             </div>
             <div>
               <Label htmlFor="vehicleCapacity">Vehicle Capacity (kg)</Label>
-              <Input id="vehicleCapacity" name="vehicleCapacity" type="number" placeholder="e.g., 1000" aria-describedby="vehicleCapacity-error" suppressHydrationWarning={true} />
+              <Input id="vehicleCapacity" name="vehicleCapacity" type="number" placeholder="e.g., 1000" aria-describedby="vehicleCapacity-error" suppressHydrationWarning={true} required />
               {state.errors?.vehicleCapacity && <p id="vehicleCapacity-error" className="text-sm text-destructive mt-1">{state.errors.vehicleCapacity.join(', ')}</p>}
             </div>
             <div>
@@ -311,7 +317,7 @@ export default function RouteOptimizationPage() {
                   </Alert>
                 )}
                 
-                {state.origin && state.destination ? (
+                {GOOGLE_MAPS_API_KEY && state.origin && state.destination ? (
                   <div className="mt-4 h-80 bg-muted rounded-lg shadow-inner overflow-hidden" data-ai-hint="interactive route map">
                     <iframe
                       width="100%"
@@ -327,7 +333,7 @@ export default function RouteOptimizationPage() {
                 ) : (
                   <div className="mt-4 h-64 bg-muted rounded-lg flex items-center justify-center text-muted-foreground shadow-inner" data-ai-hint="route map">
                     <MapIcon className="w-16 h-16 mr-2" />
-                    Map data unavailable (origin/destination missing).
+                    {GOOGLE_MAPS_API_KEY ? "Map data unavailable (origin/destination missing)." : "Map disabled (API key missing)."}
                   </div>
                 )}
               </div>
